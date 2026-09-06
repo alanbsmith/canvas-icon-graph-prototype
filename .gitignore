@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Claude Code's own session/tooling state -- not project source
+.claude/
+
+# Local secrets (copy .env.example to .env and fill in real values)
+.env
+
+# Rasterized icon PNGs -- trivially/instantly regenerable from the SVGs
+# already vendored in node_modules, no reproducibility reason to version
+# hundreds of image files. output/tags.json and output/report.html are
+# COMMITTED on purpose: they're the expensive artifact (hours of vision-
+# model calls), so a fresh clone gets them for free instead of needing to
+# re-run `npm run tag:all` just to get a working graph.
+output/images/

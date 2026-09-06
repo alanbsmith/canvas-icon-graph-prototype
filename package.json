@@ -1,0 +1,33 @@
+{
+  "name": "canvas-system-icon-graph",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Prototype: generate richer search tags for Canvas Kit icons using a local vision-language model.",
+  "scripts": {
+    "tag": "tsx src/run.ts",
+    "tag:all": "tsx src/run.ts --all",
+    "load-graph": "tsx src/graph/loadGraph.ts",
+    "search-server": "tsx src/server/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/express": "^2.0.0",
+    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
+    "@workday/canvas-system-icons-web": "^5.1.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "neo4j-driver": "^6.2.0",
+    "ollama": "^0.6.3",
+    "sharp": "^0.35.4",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.13.3",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  }
+}
