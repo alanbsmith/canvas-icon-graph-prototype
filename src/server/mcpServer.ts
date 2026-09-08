@@ -5,6 +5,8 @@
 // own, only the thin wrapping needed to expose that logic as MCP tools.
 // Docs: https://modelcontextprotocol.io/
 
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { McpServer } from '@modelcontextprotocol/server';
 import { z } from 'zod';
 import type { Driver } from 'neo4j-driver';
@@ -20,6 +22,11 @@ import { CANONICAL_CATEGORIES, IconSearchResultSchema, InvalidCategoryError } fr
 // most. `.default(10)` means a caller can omit `limit` entirely and still
 // get sensible results.
 const limitSchema = z.number().int().min(1).max(50).default(10);
+
+// Same path the REST server's /images static route serves from (see
+// index.ts) -- the rasterized PNGs the tagging pipeline produced, one per
+// icon, named by the icon's short name (e.g. "rocket.png").
+const ICON_IMAGES_DIR = path.join(import.meta.dirname, '..', '..', 'output', 'images');
 
 /**
  * Wraps a search-tool handler so that a known, expected failure
@@ -109,7 +116,28 @@ export function buildMcpServer(driver: Driver): McpServer {
       if (!icon) {
         return { content: [{ type: 'text' as const, text: `No icon found with name "${name}".` }], isError: true };
       }
-      return { content: [{ type: 'text' as const, text: JSON.stringify(icon, null, 2) }], structuredContent: { icon } };
+
+      const content: ({ type: 'text'; text: string } | { type: 'image'; data: string; mimeType: string })[] = [
+        { type: 'text', text: JSON.stringify(icon, null, 2) },
+      ];
+
+      // This is the one tool where someone's usually trying to decide "is
+      // this actually the right icon?" -- seeing the real image matters
+      // more here than for the list-of-candidates search tools, where
+      // embedding an image per result (up to 50 of them) would bloat every
+      // response even before anyone's picked one to look at closer.
+      try {
+        const imageBuffer = await readFile(path.join(ICON_IMAGES_DIR, `${icon.name}.png`));
+        content.push({ type: 'image', data: imageBuffer.toString('base64'), mimeType: 'image/png' });
+      } catch {
+        // No rasterized PNG for this icon (e.g. it predates the tagging
+        // pipeline's image output, or was never regenerated) -- the text
+        // details above are still useful on their own, so degrade
+        // gracefully rather than failing the whole tool call over a
+        // missing picture.
+      }
+
+      return { content, structuredContent: { icon } };
     },
   );
 

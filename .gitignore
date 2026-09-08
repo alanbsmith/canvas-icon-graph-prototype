@@ -1,11 +1,21 @@
 # Dependencies
 node_modules/
 
+# Build output (currently only demo/dist/, from the Vite demo app)
+dist/
+
 # Claude Code's own session/tooling state -- not project source
 .claude/
 
 # Local secrets (copy .env.example to .env and fill in real values)
 .env
+
+# Local MCP client config -- contains the real MCP_API_KEY bearer token
+# inline (Claude Code's ${VAR} expansion in .mcp.json only pulls from the
+# parent shell's environment, not from .env, which is unreliable for
+# GUI-launched apps like Claude Desktop/Cursor that don't inherit shell
+# exports -- so this file has the literal key and must stay local-only).
+.mcp.json
 
 # Rasterized icon PNGs -- trivially/instantly regenerable from the SVGs
 # already vendored in node_modules, no reproducibility reason to version

@@ -94,6 +94,8 @@ npm run search-server   # starts the MCP + REST search server
   ```
 - `GET http://localhost:3000/api/search/{name,category,tag,natural-language}` and `GET /api/icons/:name` — plain JSON REST routes, unauthenticated, for a website's search box (e.g. `curl "http://localhost:3000/api/search/natural-language?query=arrow+pointing+down"`).
 
+There's also a small [Canvas Kit React demo app](./demo) with an actual search box and results grid, for showing natural-language search to people who'd rather not read `curl` output — see `demo/README.md`.
+
 ### Regenerating or extending tags (optional)
 
 You don't need this to run search — it's only for actually changing what's tagged: picking up new icons after Canvas Kit ships more, or re-tagging after a prompt/model change (see `ollama pull qwen2.5vl:7b` under Setup above).

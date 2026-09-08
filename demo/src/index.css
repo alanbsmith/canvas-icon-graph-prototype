@@ -1,0 +1,8 @@
+/* Canvas Kit is designed for a light background -- without this, the page
+   inherits whatever background the browser/OS dark-mode preference wants,
+   which makes Canvas's (mostly dark-on-light) text unreadable. */
+body {
+  margin: 0;
+  background: #ffffff;
+  color: #1a1a1a;
+}

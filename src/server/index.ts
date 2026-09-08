@@ -12,6 +12,8 @@
 // processes would mean either duplicating that setup or building a way
 // for them to share it, for no real benefit at this project's scale.
 
+import path from 'node:path';
+import express from 'express';
 import cors from 'cors';
 import { createMcpHandler } from '@modelcontextprotocol/server';
 import { createMcpExpressApp, requireBearerAuth } from '@modelcontextprotocol/express';
@@ -57,6 +59,14 @@ async function main(): Promise<void> {
   // before any of our own logic even runs. Scoped to /api only; /mcp is
   // never called from a browser, so it doesn't need this.
   app.use('/api', cors({ origin: CORS_ALLOWED_ORIGINS }));
+
+  // Serves the rasterized icon PNGs (output/images/<name>.png, produced by
+  // the tagging pipeline in run.ts) as plain static files, e.g.
+  // http://.../images/accessibility.png -- this is what lets a browser-based
+  // demo (see ../../demo/) show the actual icon next to each search result
+  // without needing its own copy of every image or a separate image server.
+  // CORS-scoped the same way as /api, for the same reason.
+  app.use('/images', cors({ origin: CORS_ALLOWED_ORIGINS }), express.static(path.join(import.meta.dirname, '..', '..', 'output', 'images')));
 
   // `createMcpHandler` builds a web-standard fetch handler; `toNodeHandler`
   // adapts that to the (req, res, parsedBody) shape a plain Node/Express
